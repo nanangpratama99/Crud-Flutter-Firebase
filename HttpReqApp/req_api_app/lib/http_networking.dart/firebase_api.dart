@@ -20,12 +20,26 @@ class _materialFirebaseState extends State<materialFirebase> {
     CollectionReference users = firestore.collection('users');
 
     return Scaffold(
+      backgroundColor: Colors.black54,
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.person_add,
+                size: 40,
+              ),
+            ),
+          )
+        ],
+        toolbarHeight: 100,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black54,
         title: Text(
-          "Crud Firebase",
-          style: TextStyle(color: Colors.purple),
+          "CRUD FIREBASE",
+          style: TextStyle(color: Colors.white, fontSize: 25),
         ),
         centerTitle: true,
       ),
@@ -34,108 +48,131 @@ class _materialFirebaseState extends State<materialFirebase> {
           stream: users.snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Container(
-                child: Column(
-                  children: snapshot.data!.docs
-                      .map(
-                        (e) => Container(
-                          child: ListTile(
-                            textColor: Colors.purple,
-                            leading: CircleAvatar(
-                              backgroundColor: Colors.purple,
-                              child: Text(
-                                e["nama"][0],
-                                style: TextStyle(color: Colors.white),
-                              ),
+              return SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    children: snapshot.data!.docs
+                        .map(
+                          (e) => Card(
+                            color: Colors.white.withOpacity(0.4),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              //<-- SEE HERE
+                              side: BorderSide(color: Colors.white, width: 2),
                             ),
-                            title: Text(e["nama"]),
-                            subtitle: Text(e["email"]),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    add1.text = e["nama"];
-                                    add2.text = e["email"];
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Center(
-                                          child: Text("Update Data"),
-                                        ),
-                                        content: Form(
-                                          key: _formKey,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              TextFormField(
-                                                controller: add1,
-                                                autofocus: true,
-                                                decoration: InputDecoration(
-                                                    hintText:
-                                                        "Input your name"),
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty) {
-                                                    return 'Please enter some text';
-                                                  }
-                                                  return null;
-                                                },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 20, horizontal: 0),
+                              child: ListTile(
+                                textColor: Colors.white,
+                                leading: CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: Colors.amber,
+                                  child: Text(
+                                    e["nama"][0].toString().toUpperCase(),
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 30),
+                                  ),
+                                ),
+                                title: Text(
+                                  e["nama"].toString().toUpperCase(),
+                                  style: TextStyle(
+                                      fontSize: 25, color: Colors.amber),
+                                ),
+                                subtitle: Text(e["email"]),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        add1.text = e["nama"];
+                                        add2.text = e["email"];
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Center(
+                                              child: Text("Update Data"),
+                                            ),
+                                            content: Form(
+                                              key: _formKey,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  TextFormField(
+                                                    controller: add1,
+                                                    autofocus: true,
+                                                    decoration: InputDecoration(
+                                                        hintText:
+                                                            "Input your name"),
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return 'Please enter some text';
+                                                      }
+                                                      return null;
+                                                    },
+                                                  ),
+                                                  TextFormField(
+                                                    controller: add2,
+                                                    autofocus: true,
+                                                    decoration: InputDecoration(
+                                                        hintText:
+                                                            "Input your email"),
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return 'Please enter some email';
+                                                      }
+                                                    },
+                                                  ),
+                                                ],
                                               ),
-                                              TextFormField(
-                                                controller: add2,
-                                                autofocus: true,
-                                                decoration: InputDecoration(
-                                                    hintText:
-                                                        "Input your email"),
-                                                validator: (value) {
-                                                  if (value == null ||
-                                                      value.isEmpty) {
-                                                    return 'Please enter some email';
+                                            ),
+                                            actions: [
+                                              IconButton(
+                                                onPressed: () {
+                                                  if (_formKey.currentState!
+                                                      .validate()) {
+                                                    users.doc(e.id).update({
+                                                      "nama": add1.text,
+                                                      "email": add2.text,
+                                                    });
+                                                    Navigator.of(context).pop();
                                                   }
                                                 },
+                                                icon: Icon(
+                                                  Icons.edit,
+                                                  size: 20,
+                                                ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                        actions: [
-                                          IconButton(
-                                            onPressed: () {
-                                              if (_formKey.currentState!
-                                                  .validate()) {
-                                                users.doc(e.id).update({
-                                                  "nama": add1.text,
-                                                  "email": add2.text,
-                                                });
-                                                Navigator.of(context).pop();
-                                              }
-                                            },
-                                            icon: Icon(Icons.edit),
-                                          ),
-                                        ],
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.edit,
+                                        size: 40,
+                                        color: Colors.white.withOpacity(0.7),
                                       ),
-                                    );
-                                  },
-                                  icon: Icon(
-                                    Icons.edit,
-                                    color: Colors.green,
-                                  ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        users.doc(e.id).delete();
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        size: 40,
+                                        color: Colors.white.withOpacity(0.7),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    users.doc(e.id).delete();
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red.withOpacity(0.7),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                      .toList(),
+                        )
+                        .toList(),
+                  ),
                 ),
               );
             } else if (snapshot.hasError) {
@@ -204,8 +241,11 @@ class _materialFirebaseState extends State<materialFirebase> {
             ),
           );
         },
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.purple,
+        child: const Icon(
+          Icons.add,
+          size: 40,
+        ),
+        backgroundColor: Colors.amber[800],
       ),
     );
   }

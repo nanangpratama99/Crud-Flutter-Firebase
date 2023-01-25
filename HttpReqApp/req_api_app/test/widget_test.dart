@@ -8,13 +8,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:req_api_app/http_networking.dart/16_networking_http.dart';
+import 'package:req_api_app/http_networking.dart/firebase_api.dart';
 
 import 'package:req_api_app/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(Module16App());
+    await tester.pumpWidget(materialFirebase());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
